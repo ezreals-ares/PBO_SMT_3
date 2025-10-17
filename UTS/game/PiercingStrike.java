@@ -9,13 +9,20 @@ public class PiercingStrike implements Skill {
 
     @Override
     public void apply(Character self, Character target) {
-        int dmg = (int) (self.getAttackPower() * multiplier);
-        int oldHp = target.getHealt();
-        int finalDamage = target.onComingDamage(dmg); 
-        target.takeDamage(finalDamage);
-        System.out.println("[Team A] " + self.getName() + " uses " + name() + ": " + finalDamage + " dmg");
-        System.out.println("  " + target.getName() + " HP: " + oldHp + " -> " + target.getHealt());
-    }
+    int baseDamage = self.getAttackPower();
+        if (self instanceof Player p) {
+            baseDamage = p.getStrategy().computeDamage(p, target);
+        }
+
+    int dmg = (int) (baseDamage * this.multiplier);
+    int oldHp = target.getHealth();
+
+    target.takeDamage(dmg); 
+    int actualDamage = oldHp - target.getHealth(); 
+    
+    System.out.println("[Team A] " + self.getName() + " menggunakan " + name() + " dan memberikan " + actualDamage + " damage!");
+    System.out.println("  " + target.getName() + " HP: " + oldHp + " -> " + target.getHealth());
+}
 
     @Override public String toString() { return name(); }
 }

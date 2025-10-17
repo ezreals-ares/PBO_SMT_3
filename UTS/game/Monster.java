@@ -10,12 +10,14 @@ public class Monster extends Enemy {
     }
 
     @Override
-    public void attack(Character target) {
-        int damage = strategy.computeDamage(this, target);
-        damage += rand.nextInt(6) - 3;
-        int finalDamage = target.onComingDamage(Math.max(0, damage));
+   public void attack(Character target) {
+        int baseDamage = strategy.computeDamage(this, target);
+        int variation = (int) (baseDamage * 0.25);
+        int randomizedDamage = baseDamage + rand.nextInt(variation * 2 + 1) - variation;
+
+        int finalDamage = target.onComingDamage(Math.max(0, randomizedDamage));
         target.takeDamage(finalDamage);
-        System.out.println(getName() + " menyerang " + target.getName() +  " dengan damage " + finalDamage);
+        System.out.println(getName() + " menyerang " + target.getName() + " dengan damage " + finalDamage);
     }
     
 }

@@ -16,7 +16,7 @@ public class Battle {
         System.out.println("Team A:");
         for (Character c : teamA) {
             if (c instanceof Player p) {
-                System.out.println("  - Player(name=" + p.getName() + ", HP=" + p.getHealt() + "/" + p.maxHealth +
+                System.out.println("  - Player(name=" + p.getName() + ", HP=" + p.getHealth() + "/" + p.maxHealth +
                     ", AP=" + p.getAttackPower() + ", Lv=" + p.getLevel() + ", Strategy=" + p.getStrategy() + ")");
                 System.out.print("    Skills: ");
                 if (p.getSkills().isEmpty()) System.out.println("None");
@@ -25,7 +25,7 @@ public class Battle {
                 if (p.getEffect().isEmpty()) System.out.println("None");
                 else System.out.println(p.getEffect());
             } else {
-                System.out.println("  - " + c.getClass().getSimpleName() + "(name=" + c.getName() + ", HP=" + c.getHealt() +
+                System.out.println("  - " + c.getClass().getSimpleName() + "(name=" + c.getName() + ", HP=" + c.getHealth() +
                     "/" + c.maxHealth + ", AP=" + c.getAttackPower() + ")");
             }
         }
@@ -34,37 +34,50 @@ public class Battle {
         for (Character c : teamB) {
             if (c instanceof Enemy e) {
                 System.out.println("  - " + c.getClass().getSimpleName() +
-                    "(name=" + e.getName() + ", HP=" + e.getHealt() + "/" + e.maxHealth +
+                    "(name=" + e.getName() + ", HP=" + e.getHealth() + "/" + e.maxHealth +
                     ", AP=" + e.getAttackPower() + ", Threat=" + e.getThreatLevel() + ")");
             }
         }
 
-        System.out.println("\n=== BATTLE START ===");
+       System.out.println("\n=== BATTLE START ===");
         int turn = 1;
 
-        while (alive(teamA) && alive(teamB)) {
-            System.out.println("\n=== TURN " + turn + "===");
+       
+        List<Character> teamA_alive = new ArrayList<>(teamA);
+        List<Character> teamB_alive = new ArrayList<>(teamB);
 
-            for(Character c : teamA) {
-                if(c.isAlive()) {
-                    Character target = pickTarget(teamB);
-                    if(target != null) c.performTurn(target);
+        while (isTeamAlive(teamA_alive) && isTeamAlive(teamB_alive)) {
+            System.out.println("\n=== TURN " + turn++ + " ===");
+
+            for (Character attacker : new ArrayList<>(teamA_alive)) {
+                if (attacker.isAlive()) {
+                    Character target = pickPlayerTarget(teamB_alive);
+                    if (target != null) {
+                        attacker.performTurn(target);
+                        if (!target.isAlive()) {
+                           System.out.println(">> " + target.getName() + " telah dikalahkan! <<");
+                        }
+                    }
                 }
             }
+            teamB_alive.removeIf(c -> !c.isAlive()); 
 
-             for(Character c : teamB) {
-                if(c.isAlive()) {
-                    Character target = pickTarget(teamA);
-                    if(target != null) c.performTurn(target);
+          
+            for (Character attacker : new ArrayList<>(teamB_alive)) {
+                if (attacker.isAlive()) {
+                    Character target = pickEnemyTarget(teamA_alive);
+                    if (target != null) {
+                        attacker.performTurn(target);
+                         if (!target.isAlive()) {
+                           System.out.println(">> " + target.getName() + " telah dikalahkan! <<");
+                        }
+                    }
                 }
             }
-
-            turn++;
-            
+            teamA_alive.removeIf(c -> !c.isAlive()); 
         }
-
         System.out.println("\n=== RESULT ===");
-        if(alive(teamA)) {
+        if(isTeamAlive(teamA)) {
             System.out.println("Team A menang");
         } else {
             System.out.println("Team B Menang");
@@ -72,19 +85,30 @@ public class Battle {
 
            System.out.println("\nSisa HP:");
         for (Character c : teamA) {
-            System.out.println("  - " + c.getClass().getSimpleName() + "(" + c.getName() + "): " + c.getHealt() + "/" + c.maxHealth);
+            System.out.println("  - " + c.getClass().getSimpleName() + "(" + c.getName() + "): " + c.getHealth() + "/" + c.maxHealth);
         }
         for (Character c : teamB) {
-            System.out.println("  - " + c.getClass().getSimpleName() + "(" + c.getName() + "): " + c.getHealt() + "/" + c.maxHealth);
+            System.out.println("  - " + c.getClass().getSimpleName() + "(" + c.getName() + "): " + c.getHealth() + "/" + c.maxHealth);
         }
     }
     
-
-    private boolean alive (List<Character> team) {
+    private boolean isTeamAlive(List<Character> team) {
         return team.stream().anyMatch(Character::isAlive);
     }
 
-    private Character pickTarget(List<Character> team) {
-        return team.stream().filter(Character::isAlive).findFirst().orElse(null);
+    private Character pickPlayerTarget(List<Character> enemies) {
+        return enemies.stream()
+                .filter(Character::isAlive)
+                .map(c -> (Enemy) c) 
+                .min(Comparator.comparing(Enemy::getThreatLevel).reversed() 
+                             .thenComparing(Character::getHealth)) 
+                .orElse(null);
+    }
+
+    private Character pickEnemyTarget(List<Character> players) {
+        return players.stream()
+                .filter(Character::isAlive)
+                .max(Comparator.comparing(Character::getHealth)) 
+                .orElse(null);
     }
 }

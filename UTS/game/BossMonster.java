@@ -10,7 +10,7 @@ public class BossMonster extends Enemy {
     @Override
     public void attack(Character target) {
         turnCounter++;
-        boolean rage = (getHealt() < getMaxHealth() / 2) || (turnCounter % 3 == 0);
+        boolean rage = (getHealth() < getMaxHealth() / 2) || (turnCounter % 3 == 0);
         int base = getAttackPower();
         int dmg = rage ? (int)(base * 2.0) : base;
 

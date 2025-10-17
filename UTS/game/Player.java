@@ -5,6 +5,7 @@ public class Player extends Character {
     private final int level;
     private final List<Skill> skills = new ArrayList<>();
     private AttackStrategy strategy;
+    private final Random rand = new Random();
 
     public Player(String name, int hp, int ap, int level, AttackStrategy strat) {
         super(name, hp, ap);
@@ -21,8 +22,6 @@ public class Player extends Character {
 
     @Override
     public void attack(Character target) {
-        java.util.Random rand = new java.util.Random();
-
         if (!skills.isEmpty() && rand.nextBoolean()) {
             Skill chosen = skills.get(rand.nextInt(skills.size()));
             chosen.apply(this, target);

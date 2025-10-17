@@ -13,9 +13,9 @@ public class Regen implements StatusEffect {
 
     @Override
     public void onTurnEnd(Character self) {
-        int before = self.getHealt();
+        int before = self.getHealth();
         self.healBy(perTurn);
-        System.out.println("[End Effects] " + self.getName() + " Regen: +" + perTurn + " HP => " + before + " -> " + self.getHealt());
+        System.out.println("[End Effects] " + self.getName() + " Regen: +" + perTurn + " HP => " + before + " -> " + self.getHealth());
         remaining--;
     }
 

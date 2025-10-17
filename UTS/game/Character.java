@@ -3,7 +3,7 @@ import java.util.*;
 public abstract class Character {
     private final String name;
     protected final int maxHealth;
-    private int healt;
+    private int health;
     private final int attackPower;
 
     private final List<StatusEffect> effect = new ArrayList<>();
@@ -15,7 +15,7 @@ public abstract class Character {
 
         this.name = name;
         this.maxHealth = health;
-        this.healt = health;
+        this.health = health;
         this.attackPower = attackPower;
     }
 
@@ -27,8 +27,8 @@ public abstract class Character {
         return attackPower;
     }
 
-    public int getHealt() {
-        return healt;
+    public int getHealth() {
+        return health;
     }
 
     public List<StatusEffect> getEffect() {
@@ -41,16 +41,16 @@ public abstract class Character {
 
     public final void healBy(int amount) {
     
-         setHealth(getHealt() + amount);
+         setHealth(getHealth() + amount);
     }
 
     protected final void setHealth(int value) {
         if(value < 0) value = 0;
         if(value > maxHealth) value = maxHealth;
-        this.healt = value;
+        this.health = value;
     }
 
-    public final boolean isAlive() {return healt > 0;}
+    public final boolean isAlive() {return health > 0;}
 
     protected int onComingDamage(int base) {
         int finalDamage = base;
@@ -63,7 +63,7 @@ public abstract class Character {
     }
 
     public final void takeDamage(int damage) {
-        setHealth(getHealt() - Math.max(0, damage));
+        setHealth(getHealth() - Math.max(0, damage));
     }
 
     public final void addEffect(StatusEffect e) {

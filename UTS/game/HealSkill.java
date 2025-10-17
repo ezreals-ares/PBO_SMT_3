@@ -10,10 +10,10 @@ public class HealSkill implements Skill {
 
     @Override
     public void apply(Character self, Character target) {
-        int before = self.getHealt();
+        int before = self.getHealth();
         self.healBy(amount);
         System.out.println(self.getName() + " menggunakan " + name()
-            + " memulihkan " + (self.getHealt() - before) + " HP.");
+            + " memulihkan " + (self.getHealth() - before) + " HP.");
     }
 
     @Override
